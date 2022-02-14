@@ -7,5 +7,7 @@ int main(int argc, char **argv)
   communicator = new communication::Serial("/dev/ttyUSB0", 9600);
   communicator->init();
   printf("%s", communicator->isGood() ? "good" : "flase");
+
+  delete communicator;
   return 0;
 }
