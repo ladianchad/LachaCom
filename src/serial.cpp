@@ -1,4 +1,4 @@
-#include "serial.hpp"
+#include "communication/serial.hpp"
 #include <stdio.h>
 #include <string>
 #include <string.h>
@@ -10,9 +10,8 @@
 
 namespace communication
 {
-  using namespace std;
 
-  Serial::Serial(std::string port, int baud_rate, int max_buff = 1024) : Communication(max_buff), port_(port), baud_rate_(baud_rate)
+  Serial::Serial(std::string port, int baud_rate, int max_buff) : Communication(max_buff), port_(port), baud_rate_(baud_rate)
   {
   }
 
@@ -27,7 +26,7 @@ namespace communication
   void Serial::init()
   {
     serial_port_ = open(port_.c_str(), O_RDWR);
-    cout << "Opening " << port_ << " port..." << endl;
+    std::cout << "Opening " << port_ << " port..." << std::endl;
     if (serial_port_ < 0)
     {
       good_ = false;
@@ -89,7 +88,7 @@ namespace communication
       int write_byte = ::write(serial_port_, data, sizeof(data));
       if (write_byte < 0)
       {
-        cout << "Write Error!!" << endl;
+        std::cout << "Write Error!!" << std::endl;
         return -1;
       }
       else
@@ -97,7 +96,7 @@ namespace communication
     }
     else
     {
-      cout << "Can't use port!!" << endl;
+      std::cout << "Can't use port!!" << std::endl;
       return false;
     }
   }
@@ -109,7 +108,7 @@ namespace communication
       int read_byte = ::read(serial_port_, buf, size);
       if (read_byte < 0)
       {
-        cout << "Read Error!!" << endl;
+        std::cout << "Read Error!!" << std::endl;
         return -1;
       }
       else
@@ -117,7 +116,7 @@ namespace communication
     }
     else
     {
-      cout << "Can't use port!!" << endl;
+      std::cout << "Can't use port!!" << std::endl;
       return -1;
     }
   }

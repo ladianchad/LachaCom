@@ -3,7 +3,7 @@
 #include "communication.hpp"
 namespace communication
 {
-  class Serial : Communication
+  class Serial : public Communication
   {
   protected:
     std::string port_;
