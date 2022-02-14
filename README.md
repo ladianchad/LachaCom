@@ -18,5 +18,4 @@ Now Exist
 
 TODO
 - Socket
-- TCP / IP
-
+- I2C
