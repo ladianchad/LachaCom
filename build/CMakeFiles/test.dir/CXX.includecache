@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/communication/communication.hpp
+string
+-
+
+../include/communication/serial.hpp
+communication.hpp
+../include/communication/communication.hpp
+
+/home/kevin/study/communication/src/test.cpp
+communication/communication.hpp
+-
+communication/serial.hpp
+-
+
