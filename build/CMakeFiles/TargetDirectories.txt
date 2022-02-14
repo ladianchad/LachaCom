@@ -1,4 +1,0 @@
-/home/kevin/study/communication/build/CMakeFiles/rebuild_cache.dir
-/home/kevin/study/communication/build/CMakeFiles/edit_cache.dir
-/home/kevin/study/communication/build/CMakeFiles/test.dir
-/home/kevin/study/communication/build/CMakeFiles/communication.dir
