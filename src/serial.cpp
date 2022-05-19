@@ -134,6 +134,7 @@ Serial::read(char *buf, int size)
 void 
 Serial::setReadInterrupt(ReadInterruptCallBack intterupt_callback)
 {
+  thread_run_ = true;
   intterupt_callback_ = intterupt_callback;
   read_thread_ = std::make_shared<std::thread>(std::bind(&Serial::readThread, this)); 
 }
@@ -144,7 +145,7 @@ Serial::readThread()
   struct pollfd poll_fd;
   poll_fd.fd = serial_port_;
   poll_fd.events = POLLIN;
-  while(true){
+  while(thread_run_){
     if(poll(&poll_fd, POLLIN, -1)){
       intterupt_callback_();
     }
@@ -156,6 +157,7 @@ Serial::readThread()
 void
 Serial::close()
 {
+  thread_run_ = false;
   thread_end_promise_.get_future().get();
 }
 

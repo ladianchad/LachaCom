@@ -19,11 +19,25 @@ find_package(Threads REQUIRED)
 include_directories(
   include
 )
+set(INSTALL_RPATH /usr/lib)
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library(communication
   src/serial.cpp
 )
+target_link_libraries(communication Threads::Threads)
 
-add_executable(test src/test.cpp)
+add_executable(test src/sample.cpp)
 add_dependencies(test communication)
-target_link_libraries(test communication Threads::Threads)
+target_link_libraries(test communication)
+
+install(TARGETS communication
+  EXPORT communication
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include
+  DESTINATION include
+)

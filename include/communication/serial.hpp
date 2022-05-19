@@ -13,6 +13,8 @@ namespace communication
   {
   public:
     using ReadInterruptCallBack = std::function<void()>;
+    using SharedPtr = std::shared_ptr<Serial>;
+    
     Serial(std::string port, int baud_rate, int max_buff = 1024);
     ~Serial();
     virtual void init() override;
@@ -30,6 +32,7 @@ namespace communication
     std::string port_;
     int baud_rate_;
     int serial_port_;
+    bool thread_run_;
     ReadInterruptCallBack intterupt_callback_;
     std::shared_ptr<std::mutex> mutex_;
     std::shared_ptr<std::thread> read_thread_;
