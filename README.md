@@ -1,5 +1,10 @@
 ### Communication C++ Package
 
+Setting
+```bash
+sudo usermod -aG dialout $USER
+```
+
 Build
 ```bash
 mkdir build && cd build
