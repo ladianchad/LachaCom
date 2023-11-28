@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
   Logger::set_level(Logger::level::debug);
   InterfaceInitParam param({
     {UART::USE_SYS_POLLING, true},
-    {UART::PORT, "/dev/ttys8"},
+    {UART::PORT, "/dev/ttyUSB0"},
     {UART::BAUDRATE, 115200}
   });
 
