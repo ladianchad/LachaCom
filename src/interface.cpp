@@ -146,7 +146,7 @@ Interface::backgroundThread()
       poll_fd.fd = this->fd_;
       if(poll(&poll_fd, POLLIN, 100)){
         if(this->read(&buff, sizeof(buff))){
-          this->polling_cb_(b);
+          this->polling_cb_(buff);
         }
       }
     } else {
