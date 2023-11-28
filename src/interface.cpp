@@ -118,7 +118,7 @@ Interface::backgroundThread()
         this->polling_cb_(b);
       }
     } else {
-      this->logger_->debug("use sys polling setted. but no interrupt cb of file descriptor.");
+      this->logger_->debug("USE_SYS_POLLING setted. but no interrupt cb of file descriptor.");
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
   }
