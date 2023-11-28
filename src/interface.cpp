@@ -109,7 +109,7 @@ Interface::backgroundThread()
   struct pollfd poll_fd;
   poll_fd.events = POLLIN;
   this->logger_->debug("Start polling thread.");
-  while (!this->stop_thread_.load())
+  while(this->ok() && !this->stop_thread_.load())
   {
     if(this->polling_cb_ && this->fd_){
       poll_fd.fd = this->fd_;
