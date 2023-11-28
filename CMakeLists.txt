@@ -62,6 +62,7 @@ include_directories(
 
 add_library(communication
   src/interface.cpp
+  interfaces/uart.cpp
 )
 target_link_libraries(communication Threads::Threads nlohmann_json::nlohmann_json magic_enum::magic_enum spdlog::spdlog_header_only)
 

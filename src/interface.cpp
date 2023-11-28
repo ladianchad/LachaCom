@@ -37,15 +37,10 @@ operator<<(std::ostream & io, InterfaceInitParam & param)
   return io;
 }
 
-    
-template<typename ValueT>
-ValueT
-InterfaceInitParam::getKeyValue(const std::string & key, const ValueT default_value) const
+std::string
+InterfaceInitParam::getKeyValue(const std::string & key, const char * default_value) const
 {
-  if(this->param_.contains(key)){
-    return this->param_[key];
-  }
-  return default_value;
+  return this->getKeyValue<std::string>(key, default_value);
 }
 
 const char * Interface::USE_SYS_POLLING = "USE_SYS_POLLING";
@@ -69,7 +64,7 @@ Interface::~Interface()
   }
 }
 
-Type
+Interface::Type
 Interface::getType() const
 {
   return type_;
@@ -85,6 +80,7 @@ bool
 Interface::init(const InterfaceInitParam & param)
 {
   this->logger_->info("Start initialize with below parameter.\n{}", param.toString());
+  this->param_ = param;
   bool init_success = onInit(param);
   this->ok_.store(init_success);
   bool use_interrupt = param.getKeyValue(Interface::USE_SYS_POLLING, false);
@@ -94,6 +90,40 @@ Interface::init(const InterfaceInitParam & param)
     this->background_thread_ = std::make_unique<thread_t>(std::bind(&Interface::backgroundThread, this));
   }
   return init_success;
+}
+
+size_t
+Interface::write(const char *data, size_t size)
+{
+  std::lock_guard<mutex_t> lock(this->mutex_);
+  if(this->fd_ < 0){
+    this->logger_->error("Destination {} not opened. can't write data.", getFDName());
+    this->ok_.store(false);
+    return -1;
+  }
+  size_t write_byte = ::write(this->fd_, data, size);
+  if(write_byte < 0){
+    this->logger_->error("Write to {} failed.", getFDName());
+    this->ok_.store(false);
+  }
+  return write_byte;
+}
+
+size_t
+Interface::read(char *buf, size_t size)
+{
+  std::lock_guard<mutex_t> lock(this->mutex_);
+  if(this->fd_ < 0){
+    this->logger_->error("Destination {} not opened. can't read data.", getFDName());
+    this->ok_.store(false);
+    return -1;
+  }
+  size_t read_byte = ::read(this->fd_, buf, size);
+  if(read_byte < 0){
+    this->logger_->error("Read from {} failed.", getFDName());
+    this->ok_.store(false);
+  }
+  return read_byte;
 }
 
 void
@@ -115,13 +145,16 @@ Interface::backgroundThread()
       poll_fd.fd = this->fd_;
       if(poll(&poll_fd, POLLIN, 100)){
         char b;
-        this->read(&b, 1);
+        this->read(&b, sizeof(b));
         this->polling_cb_(b);
       }
     } else {
       this->logger_->debug("USE_SYS_POLLING setted. but no interrupt cb of file descriptor.");
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
+  }
+  if(!this->ok()){
+    this->logger_->error("polling thread stopped. because interface not ok");
   }
 }
 

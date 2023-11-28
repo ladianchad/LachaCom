@@ -22,8 +22,6 @@ namespace communication
   {
   public:
 
-    friend class Interface;
-
     InterfaceInitParam();
 
     explicit InterfaceInitParam(const ParamContainerT & param);
@@ -33,24 +31,32 @@ namespace communication
     InterfaceInitParam & operator=(const ParamContainerT & param);
 
     friend std::ostream & operator<<(std::ostream & io, InterfaceInitParam & param);
-  private:
-    
-    template<typename ValueT>
-    ValueT getKeyValue(const std::string & key, const ValueT default_value = ValueT()) const;
 
+    std::string getKeyValue(const std::string & key, const char * default_value = "") const;
+
+    template<typename ValueT>
+    ValueT getKeyValue(const std::string & key, const ValueT default_value = ValueT()) const
+    {
+      if(this->param_.contains(key)){
+        return this->param_[key];
+      }
+      return default_value;
+    }
+    
+  protected:
     ParamContainerT param_;
   };
 
   std::ostream & operator<<(std::ostream & io, InterfaceInitParam & param);
 
-  enum Type{
-    UART
-  };
-
-
   class Interface
   {
   public:
+
+    enum Type{
+      UART
+    };
+
     static const char * USE_SYS_POLLING;
 
     using SysPollingCallbackT = std::function<void(const char)>;
@@ -63,17 +69,15 @@ namespace communication
 
     Type getType() const;
 
+    virtual std::string getFDName() const = 0;
+
     bool ok() const;
 
     bool init(const InterfaceInitParam & param);
 
-    virtual int write(const char *data, int size = 1) {
-      return -1;
-    };
+    size_t write(const char *data, size_t size = 1);
 
-    virtual int read(char *buf, int size = 1) {
-      return -1;
-    };
+    size_t read(char *buf, size_t size = 1);
 
     void setSysPollingCallback(const SysPollingCallbackT polling_cb);
   
@@ -81,7 +85,7 @@ namespace communication
 
     void backgroundThread();
 
-    virtual bool onInit(const InterfaceInitParam & param) {
+    virtual bool onInit(const InterfaceInitParam &) {
       return true;
     };
 
@@ -93,6 +97,7 @@ namespace communication
     std::unique_ptr<thread_t> background_thread_;
     SysPollingCallbackT polling_cb_;
     std::shared_ptr<Logger::logger> logger_;
+    InterfaceInitParam param_;
   };
 
 } // namespace communication

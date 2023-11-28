@@ -1,5 +1,10 @@
 #include <communication/interface.hpp>
+#include <communication/interfaces/uart.hpp>
 #include <iostream>
+
+void Callback(const char data) {
+  std::cout<<data<<std::endl;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -7,11 +12,14 @@ int main(int argc, char const *argv[])
 
   Logger::set_level(Logger::level::debug);
   InterfaceInitParam param({
-    {Interface::USE_SYS_POLLING, true}
+    {UART::USE_SYS_POLLING, true},
+    {UART::PORT, "/dev/ttys8"},
+    {UART::BAUDRATE, 115200}
   });
 
-  Interface interface(1, Type::UART);
-  interface.init(param);
-  std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+  UART uart(1);
+  uart.init(param);
+  uart.setSysPollingCallback(Callback);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   return 0;
 }
