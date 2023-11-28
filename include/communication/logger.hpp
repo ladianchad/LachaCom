@@ -2,6 +2,7 @@
 #define COMMUNICATION__LOGGER_HPP_
 
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace communication
 {

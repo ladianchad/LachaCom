@@ -11,7 +11,7 @@
 
 #include <nlohmann/json.hpp>
 
-// #include "logger.hpp"
+#include "logger.hpp"
 
 namespace communication
 {
@@ -27,6 +27,8 @@ namespace communication
     InterfaceInitParam();
 
     explicit InterfaceInitParam(const ParamContainerT & param);
+
+    std::string toString() const;
 
     InterfaceInitParam & operator=(const ParamContainerT & param);
 
@@ -57,15 +59,17 @@ namespace communication
 
     explicit Interface(int max_buff, const Type & type);
 
+    ~Interface();
+
     Type getType() const;
 
     bool ok() const;
 
     bool init(const InterfaceInitParam & param);
 
-    virtual int write(const char *data, int size = 1) = 0;
+    virtual int write(const char *data, int size = 1) {};
 
-    virtual int read(char *buf, int size = 1) = 0;
+    virtual int read(char *buf, int size = 1) {};
 
     void setInterruptCallback(const InterruptCallbackT interrupt_cb);
   
@@ -73,14 +77,16 @@ namespace communication
 
     void backgroundThread();
 
-    virtual bool onInit(const InterfaceInitParam & param) = 0;
+    virtual bool onInit(const InterfaceInitParam & param) {};
 
     const Type type_;
     int max_buff_;
+    int fd_;
     std::atomic_bool ok_, stop_thread_;
     mutex_t mutex_;
     std::unique_ptr<thread_t> background_thread_;
     InterruptCallbackT interrupt_cb_;
+    std::shared_ptr<Logger::logger> logger_;
   };
 
 } // namespace communication

@@ -1,4 +1,4 @@
-#ifndef Serial_COMUNICATION_LIBS___
+s#ifndef Serial_COMUNICATION_LIBS___
 #define Serial_COMUNICATION_LIBS___
 #include "communication.hpp"
 #include <thread>
