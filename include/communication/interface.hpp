@@ -83,6 +83,8 @@ namespace communication
   
    protected:
 
+    void failHandle();
+
     void backgroundThread();
 
     virtual bool onInit(const InterfaceInitParam &) {

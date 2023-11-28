@@ -63,7 +63,7 @@ Interface::~Interface()
     this->logger_->info("Stopped polling thread.");
   }
   if(this->fd_){
-    this->logger_->log("close {}", getFDName());
+    this->logger_->info("close file descriptor.");
     ::close(this->fd_);
   }
 }
@@ -102,13 +102,13 @@ Interface::write(const char *data, size_t size)
   std::lock_guard<mutex_t> lock(this->mutex_);
   if(this->fd_ < 0){
     this->logger_->error("Destination {} not opened. can't write data.", getFDName());
-    this->ok_.store(false);
+    this->failHandle();
     return -1;
   }
   size_t write_byte = ::write(this->fd_, data, size);
   if(write_byte < 0){
     this->logger_->error("Write to {} failed.", getFDName());
-    this->ok_.store(false);
+    this->failHandle();
   }
   return write_byte;
 }
@@ -119,16 +119,24 @@ Interface::read(char *buf, size_t size)
   std::lock_guard<mutex_t> lock(this->mutex_);
   if(this->fd_ < 0){
     this->logger_->error("Destination {} not opened. can't read data.", getFDName());
-    this->ok_.store(false);
+    this->failHandle();
     return -1;
   }
   size_t read_byte = ::read(this->fd_, buf, size);
   if(read_byte < 0){
     this->logger_->error("Read from {} failed.", getFDName());
-    this->ok_.store(false);
+    this->failHandle();
   }
   return read_byte;
 }
+
+void
+Interface::failHandle()
+{
+  this->ok_.store(false);
+  this->fd_ = -1;
+}
+
 
 void
 Interface::setSysPollingCallback(const SysPollingCallbackT polling_cb)
