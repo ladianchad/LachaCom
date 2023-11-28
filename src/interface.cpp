@@ -145,8 +145,9 @@ Interface::backgroundThread()
       poll_fd.fd = this->fd_;
       if(poll(&poll_fd, POLLIN, 100)){
         char b;
-        this->read(&b, sizeof(b));
-        this->polling_cb_(b);
+        if(this->read(&b, sizeof(b))){
+          this->polling_cb_(b);
+        }
       }
     } else {
       this->logger_->debug("USE_SYS_POLLING setted. but no interrupt cb of file descriptor.");
