@@ -65,8 +65,8 @@ Interface::~Interface()
     this->logger_->info("Stop polling thread.");
     this->stop_thread_.store(true);
     this->background_thread_->join();
+    this->logger_->info("Stopped polling thread.");
   }
-  this->logger_->info("End clean up.");
 }
 
 Type
@@ -85,14 +85,15 @@ bool
 Interface::init(const InterfaceInitParam & param)
 {
   this->logger_->info("Start initialize with below parameter.\n{}", param.toString());
+  bool init_success = onInit(param);
+  this->ok_.store(init_success);
   bool use_interrupt = param.getKeyValue(Interface::USE_SYS_POLLING, false);
   if(use_interrupt){
     this->logger_->info("Create polling thread.");
     this->stop_thread_.store(false);
     this->background_thread_ = std::make_unique<thread_t>(std::bind(&Interface::backgroundThread, this));
   }
-  this->logger_->info("End initialize.");
-  return true;
+  return init_success;
 }
 
 void

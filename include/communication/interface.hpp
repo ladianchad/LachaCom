@@ -67,9 +67,13 @@ namespace communication
 
     bool init(const InterfaceInitParam & param);
 
-    virtual int write(const char *data, int size = 1) {};
+    virtual int write(const char *data, int size = 1) {
+      return -1;
+    };
 
-    virtual int read(char *buf, int size = 1) {};
+    virtual int read(char *buf, int size = 1) {
+      return -1;
+    };
 
     void setSysPollingCallback(const SysPollingCallbackT polling_cb);
   
@@ -77,7 +81,9 @@ namespace communication
 
     void backgroundThread();
 
-    virtual bool onInit(const InterfaceInitParam & param) {};
+    virtual bool onInit(const InterfaceInitParam & param) {
+      return true;
+    };
 
     const Type type_;
     int max_buff_;
