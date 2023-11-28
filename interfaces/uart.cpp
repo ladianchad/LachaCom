@@ -1,4 +1,5 @@
 #include <communication/interfaces/uart.hpp>
+#include <sys/file.h>
 
 namespace communication
 {
@@ -13,8 +14,7 @@ UART::UART()
 std::string
 UART::getFDName() const
 {
-  std::string port_name = this->param_.getKeyValue(PORT, "");
-  return "UART Port " + port_name;
+  return "UART Port " + this->port_name_;
 }
 
 bool
@@ -42,6 +42,10 @@ UART::connect()
   this->fd_ = ::open(this->port_name_.c_str(), O_RDWR);
   if(this->fd_ < 0){
     this->logger_->critical("failed open port : {} | error : {}", this->port_name_, strerror(errno));
+    return false;
+  }
+  if(flock(this->fd_, LOCK_EX | LOCK_NB) == -1) {
+    this->logger_->critical("port {} already use by other process. | error : {}", this->port_name_, strerror(errno));
     return false;
   }
   struct termios tty;

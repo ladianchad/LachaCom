@@ -107,7 +107,10 @@ Interface::init(const InterfaceInitParam & param)
     init_success &= connect();
   }
   this->ok_.store(init_success);
-
+  if(!init_success){
+    this->failHandle();
+    return false;
+  }
   bool use_polling = this->param_.getKeyValue(Interface::USE_SYS_POLLING, false);
   if(use_polling){
     this->logger_->info("Create polling thread.");
@@ -118,7 +121,7 @@ Interface::init(const InterfaceInitParam & param)
   return init_success;
 }
 
-size_t
+ssize_t
 Interface::write(const char *data, size_t size)
 {
   std::lock_guard<mutex_t> lock(this->mutex_);
@@ -127,7 +130,7 @@ Interface::write(const char *data, size_t size)
     this->failHandle();
     return -1;
   }
-  size_t write_byte = ::write(this->fd_, data, size);
+  ssize_t write_byte = ::write(this->fd_, data, size);
   if(write_byte < 0){
     this->logger_->error("Write to {} failed.", getFDName());
     this->failHandle();
@@ -135,7 +138,7 @@ Interface::write(const char *data, size_t size)
   return write_byte;
 }
 
-size_t
+ssize_t
 Interface::read(char *buf, size_t size)
 {
   std::lock_guard<mutex_t> lock(this->mutex_);
@@ -144,7 +147,7 @@ Interface::read(char *buf, size_t size)
     this->failHandle();
     return -1;
   }
-  size_t read_byte = ::read(this->fd_, buf, size);
+  ssize_t read_byte = ::read(this->fd_, buf, size);
   if(read_byte < 0){
     this->logger_->error("Read from {} failed.", getFDName());
     this->failHandle();
@@ -159,7 +162,6 @@ Interface::failHandle()
   ::close(this->fd_);
   this->fd_ = -1;
 }
-
 
 void
 Interface::setSysPollingCallback(const SysPollingCallbackT polling_cb)

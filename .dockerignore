@@ -1,0 +1,6 @@
+build
+.vscode
+magic_enum-0.8.8
+spdlog-1.12.0
+README.md
+Dockerfile

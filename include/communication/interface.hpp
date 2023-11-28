@@ -88,9 +88,9 @@ namespace communication
 
     virtual bool connect() = 0;
 
-    size_t write(const char *data, size_t size = 1);
+    ssize_t write(const char *data, size_t size = 1);
 
-    size_t read(char *buf, size_t size = 1);
+    ssize_t read(char *buf, size_t size = 1);
 
     void setSysPollingCallback(const SysPollingCallbackT polling_cb);
   

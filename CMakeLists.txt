@@ -60,18 +60,20 @@ include_directories(
   include
 )
 
-add_library(communication
+set(library_name communication)
+
+add_library(${library_name}
   src/interface.cpp
   interfaces/uart.cpp
 )
-target_link_libraries(communication Threads::Threads nlohmann_json::nlohmann_json magic_enum::magic_enum spdlog::spdlog_header_only)
+target_link_libraries(${library_name} Threads::Threads nlohmann_json::nlohmann_json magic_enum::magic_enum spdlog::spdlog_header_only)
 
 add_executable(test src/main.cpp)
-add_dependencies(test communication)
-target_link_libraries(test communication)
+add_dependencies(test ${library_name})
+target_link_libraries(test ${library_name})
 
-install(TARGETS communication
-  EXPORT communication
+install(TARGETS ${library_name}
+  EXPORT ${library_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
