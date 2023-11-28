@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
     {UART::BAUDRATE, 115200}
   });
 
-  UART uart(1);
+  UART uart;
   uart.init(param);
   uart.setSysPollingCallback(Callback);
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));

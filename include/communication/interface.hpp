@@ -63,7 +63,7 @@ namespace communication
     using mutex_t = std::recursive_mutex;
     using thread_t = std::thread;
 
-    explicit Interface(int max_buff, const Type & type);
+    explicit Interface(const Type & type);
 
     ~Interface();
 
@@ -90,7 +90,6 @@ namespace communication
     };
 
     const Type type_;
-    int max_buff_;
     int fd_;
     std::atomic_bool ok_, stop_thread_;
     mutex_t mutex_;

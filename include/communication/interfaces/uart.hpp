@@ -21,7 +21,7 @@ public:
   static const char * BAUDRATE;
   static const char * PORT;
 
-  UART(int max_buff);
+  UART();
 
   std::string getFDName() const override;
 

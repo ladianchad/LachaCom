@@ -45,7 +45,7 @@ InterfaceInitParam::getKeyValue(const std::string & key, const char * default_va
 
 const char * Interface::USE_SYS_POLLING = "USE_SYS_POLLING";
 
-Interface::Interface(int max_buff, const Type & type) : type_(type), max_buff_(max_buff)
+Interface::Interface(const Type & type) : type_(type)
 {
   this->stop_thread_.store(true);
   this->ok_.store(false);

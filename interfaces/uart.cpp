@@ -6,8 +6,8 @@ namespace communication
 const char * UART::BAUDRATE = "BAUDRATE";
 const char * UART::PORT = "PORT";
 
-UART::UART(int max_buff)
-: Interface(max_buff, Type::UART)
+UART::UART()
+: Interface(Type::UART)
 {}
 
 std::string
