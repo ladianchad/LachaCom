@@ -139,13 +139,13 @@ Interface::backgroundThread()
   struct pollfd poll_fd;
   poll_fd.events = POLLIN;
   this->logger_->debug("Start polling thread.");
+  char buff;
   while(this->ok() && !this->stop_thread_.load())
   {
     if(this->polling_cb_ && this->fd_){
       poll_fd.fd = this->fd_;
       if(poll(&poll_fd, POLLIN, 100)){
-        char b;
-        if(this->read(&b, sizeof(b))){
+        if(this->read(&buff, sizeof(buff))){
           this->polling_cb_(b);
         }
       }
