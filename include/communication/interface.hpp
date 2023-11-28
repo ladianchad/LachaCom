@@ -51,9 +51,9 @@ namespace communication
   class Interface
   {
   public:
-    static const char * USE_INTERRUPT_K;
+    static const char * USE_SYS_POLLING;
 
-    using InterruptCallbackT = std::function<void(const char)>;
+    using SysPollingCallbackT = std::function<void(const char)>;
     using mutex_t = std::recursive_mutex;
     using thread_t = std::thread;
 
@@ -71,7 +71,7 @@ namespace communication
 
     virtual int read(char *buf, int size = 1) {};
 
-    void setInterruptCallback(const InterruptCallbackT interrupt_cb);
+    void setSysPollingCallback(const SysPollingCallbackT polling_cb);
   
    protected:
 
@@ -85,7 +85,7 @@ namespace communication
     std::atomic_bool ok_, stop_thread_;
     mutex_t mutex_;
     std::unique_ptr<thread_t> background_thread_;
-    InterruptCallbackT interrupt_cb_;
+    SysPollingCallbackT polling_cb_;
     std::shared_ptr<Logger::logger> logger_;
   };
 

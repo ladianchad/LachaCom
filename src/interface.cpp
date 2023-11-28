@@ -48,7 +48,7 @@ InterfaceInitParam::getKeyValue(const std::string & key, const ValueT default_va
   return default_value;
 }
 
-const char * Interface::USE_INTERRUPT_K = "USE_INTERRUPT";
+const char * Interface::USE_SYS_POLLING = "USE_SYS_POLLING";
 
 Interface::Interface(int max_buff, const Type & type) : type_(type), max_buff_(max_buff)
 {
@@ -62,11 +62,11 @@ Interface::~Interface()
 {
   this->logger_->info("Start clean up.");
   if(this->background_thread_ && !this->stop_thread_.load()){
-    this->logger_->info("Stop interrupt thread.");
+    this->logger_->info("Stop polling thread.");
     this->stop_thread_.store(true);
     this->background_thread_->join();
   }
-  this->logger_->info("End Clean Up.");
+  this->logger_->info("End clean up.");
 }
 
 Type
@@ -85,9 +85,9 @@ bool
 Interface::init(const InterfaceInitParam & param)
 {
   this->logger_->info("Start initialize with below parameter.\n{}", param.toString());
-  bool use_interrupt = param.getKeyValue(Interface::USE_INTERRUPT_K, false);
+  bool use_interrupt = param.getKeyValue(Interface::USE_SYS_POLLING, false);
   if(use_interrupt){
-    this->logger_->info("create interrupt thread.");
+    this->logger_->info("Create polling thread.");
     this->stop_thread_.store(false);
     this->background_thread_ = std::make_unique<thread_t>(std::bind(&Interface::backgroundThread, this));
   }
@@ -96,10 +96,10 @@ Interface::init(const InterfaceInitParam & param)
 }
 
 void
-Interface::setInterruptCallback(const InterruptCallbackT interrupt_cb)
+Interface::setSysPollingCallback(const SysPollingCallbackT polling_cb)
 {
   std::lock_guard<mutex_t> lock(this->mutex_);
-  this->interrupt_cb_ = interrupt_cb;
+  this->polling_cb_ = polling_cb;
 }
 
 void
@@ -107,21 +107,19 @@ Interface::backgroundThread()
 {
   struct pollfd poll_fd;
   poll_fd.events = POLLIN;
-  this->logger_->debug("start interrupt thread.");
+  this->logger_->debug("Start polling thread.");
   while (!this->stop_thread_.load())
   {
-    {
-      if(this->interrupt_cb_ && this->fd_){
-        poll_fd.fd = this->fd_;
-        if(poll(&poll_fd, POLLIN, 100)){
-          char b;
-          this->read(&b, 1);
-          this->interrupt_cb_(b);
-        }
-      } else {
-        this->logger_->debug("use interrupt setted. but no interrupt cb of file descriptor.");
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    if(this->polling_cb_ && this->fd_){
+      poll_fd.fd = this->fd_;
+      if(poll(&poll_fd, POLLIN, 100)){
+        char b;
+        this->read(&b, 1);
+        this->polling_cb_(b);
       }
+    } else {
+      this->logger_->debug("use sys polling setted. but no interrupt cb of file descriptor.");
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
   }
 }

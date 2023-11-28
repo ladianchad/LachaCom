@@ -5,7 +5,7 @@ int main(int argc, char const *argv[])
 {
   communication::Logger::set_level(communication::Logger::level::debug);
   communication::InterfaceInitParam param({
-    {communication::Interface::USE_INTERRUPT_K, true}
+    {communication::Interface::USE_SYS_POLLING, true}
   });
 
   communication::Interface interface(1, communication::Type::UART);
