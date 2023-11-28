@@ -62,6 +62,10 @@ Interface::~Interface()
     this->background_thread_->join();
     this->logger_->info("Stopped polling thread.");
   }
+  if(this->fd_){
+    this->logger_->log("close {}", getFDName());
+    ::close(this->fd_);
+  }
 }
 
 Interface::Type
@@ -155,7 +159,7 @@ Interface::backgroundThread()
     }
   }
   if(!this->ok()){
-    this->logger_->error("polling thread stopped. because interface not ok");
+    this->logger_->error("polling thread stopped because interface not ok");
   }
 }
 
