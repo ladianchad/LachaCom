@@ -18,23 +18,36 @@ UART::getFDName() const
 }
 
 bool
-UART::onInit(const InterfaceInitParam & param)
+UART::onInit()
 {
-  std::string port_name = param.getKeyValue(PORT, "");
-  if(port_name == ""){
+  this->port_name_ = this->param_.getKeyValue(PORT, "");
+  if(this->port_name_ == ""){
     this->logger_->error("port name not setted.");
     return false;
   }
-  speed_t baudrate = param.getKeyValue(BAUDRATE, B115200);
-  this->fd_ = ::open(port_name.c_str(), O_RDWR);
+  this->baudrate_ = this->param_.getKeyValue(BAUDRATE, B115200);
+  return true;
+}
+
+void
+UART::prepareParams()
+{
+  this->param_.addDefaultValue(UART::BAUDRATE, 115200);
+  this->param_.addDefaultValue(UART::PORT, "/dev/ttyUSB0");
+}
+
+bool
+UART::connect()
+{
+  this->fd_ = ::open(this->port_name_.c_str(), O_RDWR);
   if(this->fd_ < 0){
-    this->logger_->critical("failed open port : {} | error : {}", port_name, strerror(errno));
+    this->logger_->critical("failed open port : {} | error : {}", this->port_name_, strerror(errno));
     return false;
   }
   struct termios tty;
   if(tcgetattr(this->fd_, &tty) != 0)
   {
-    this->logger_->error("failed get {} info. | error : {}", port_name, strerror(errno));
+    this->logger_->error("failed get {} info. | error : {}", this->port_name_, strerror(errno));
     return false;
   }
   tty.c_cflag &= ~PARENB;
@@ -54,8 +67,8 @@ UART::onInit(const InterfaceInitParam & param)
   tty.c_oflag &= ~ONLCR;
   tty.c_cc[VTIME] = 10;
   tty.c_cc[VMIN] = 0;
-  cfsetispeed(&tty, baudrate);
-  cfsetospeed(&tty, baudrate);
+  cfsetispeed(&tty, this->baudrate_);
+  cfsetospeed(&tty, this->baudrate_);
   if (tcsetattr(this->fd_, TCSANOW, &tty) != 0)
   {
     this->logger_->error("failed set {} attr. | error : {}", strerror(errno));

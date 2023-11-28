@@ -25,10 +25,16 @@ public:
 
   std::string getFDName() const override;
 
+  bool connect() override;
+
 protected:
 
-  bool onInit(const InterfaceInitParam & param) override;
+  bool onInit() override;
 
+  void prepareParams() override;
+
+  std::string port_name_;
+  speed_t baudrate_;
 };
   
 } // namespace communication

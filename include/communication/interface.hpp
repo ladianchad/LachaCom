@@ -42,6 +42,15 @@ namespace communication
       }
       return default_value;
     }
+
+    void addDefaultValue(const std::string & key, const char * default_value = "");
+
+    template<typename ValueT>
+    void addDefaultValue(const std::string & key, const ValueT default_value = ValueT()){
+      if(!this->param_.contains(key)){
+        this->param_[key] = default_value;
+      } 
+    }
     
   protected:
     ParamContainerT param_;
@@ -58,6 +67,8 @@ namespace communication
     };
 
     static const char * USE_SYS_POLLING;
+    static const char * AUTO_START;
+    static const char * AUTO_RECONNECT;
 
     using SysPollingCallbackT = std::function<void(const char)>;
     using mutex_t = std::recursive_mutex;
@@ -75,6 +86,8 @@ namespace communication
 
     bool init(const InterfaceInitParam & param);
 
+    virtual bool connect() = 0;
+
     size_t write(const char *data, size_t size = 1);
 
     size_t read(char *buf, size_t size = 1);
@@ -87,15 +100,16 @@ namespace communication
 
     void backgroundThread();
 
-    virtual bool onInit(const InterfaceInitParam &) {
-      return true;
-    };
+    virtual bool onInit() = 0;
+
+    virtual void prepareParams() = 0;
 
     const Type type_;
     int fd_;
     std::atomic_bool ok_, stop_thread_;
     mutex_t mutex_;
     std::unique_ptr<thread_t> background_thread_;
+    bool auto_reconnect_;
     SysPollingCallbackT polling_cb_;
     std::shared_ptr<Logger::logger> logger_;
     InterfaceInitParam param_;
