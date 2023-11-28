@@ -3,12 +3,14 @@
 
 int main(int argc, char const *argv[])
 {
-  communication::Logger::set_level(communication::Logger::level::debug);
-  communication::InterfaceInitParam param({
-    {communication::Interface::USE_SYS_POLLING, true}
+  using namespace communication;
+
+  Logger::set_level(Logger::level::debug);
+  InterfaceInitParam param({
+    {Interface::USE_SYS_POLLING, true}
   });
 
-  communication::Interface interface(1, communication::Type::UART);
+  Interface interface(1, Type::UART);
   interface.init(param);
   std::this_thread::sleep_for(std::chrono::milliseconds(4000));
   return 0;
