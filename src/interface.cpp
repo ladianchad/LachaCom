@@ -134,7 +134,7 @@ Interface::write(const char *data, size_t size)
   }
   ssize_t write_byte = ::write(this->fd_, data, size);
   if(write_byte < 0){
-    this->logger_->error("Write to {} failed.", getFDName());
+    this->logger_->error("Write to {} failed with error : {}", getFDName(), strerror(errno));
     this->failHandle();
   }
   return write_byte;
@@ -151,7 +151,7 @@ Interface::read(char *buf, size_t size)
   }
   ssize_t read_byte = ::read(this->fd_, buf, size);
   if(read_byte < 0){
-    this->logger_->error("Read from {} failed.", getFDName());
+    this->logger_->error("Read from {} failed with error : {}", getFDName(), strerror(errno));
     this->failHandle();
   }
   return read_byte;
@@ -161,8 +161,12 @@ void
 Interface::failHandle()
 {
   this->ok_.store(false);
-  ::close(this->fd_);
-  this->fd_ = -1;
+  if(this->fd_ > 0){
+    if(::close(this->fd_) < 0){
+      this->logger_->error("Close port {} failed with error : {}", getFDName(), strerror(errno));
+    }
+    this->fd_ = -1;
+  }
 }
 
 void
@@ -192,7 +196,7 @@ Interface::backgroundThread()
       this->logger_->debug("USE_SYS_POLLING setted. but no interrupt cb of file descriptor.");
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    if(!this->ok()){
+    if(!this->ok() && this->auto_reconnect_){
       this->ok_.store(this->connect());
     }
   }

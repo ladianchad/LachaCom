@@ -1,11 +1,11 @@
 ### Communication C++ Package
 
-##Setting
+## Setting
 ```bash
 sudo usermod -aG dialout $USER
 ```
 
-##Requirements
+## Requirements
 
 ### requiered os
 `ubuntu 22.04` `ubuntu 21.04`
