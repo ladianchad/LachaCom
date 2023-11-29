@@ -25,8 +25,11 @@ cd LachaCom
 mkdir build && cd build
 sudo cmake --build --install ..
 ```
-----
-## Example
+
+## CONFIGURATION
+[Configuration](./CONFIGURATION.md)
+
+## Use
 ### C style
 ```c
 #include <communication/interface.hpp>
