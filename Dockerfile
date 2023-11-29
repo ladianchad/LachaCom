@@ -6,5 +6,5 @@ RUN mkdir -p /opt/test/workspace/communication  &&\
   apt install build-essential cmake wget nlohmann-json3-dev libspdlog-dev -y
 WORKDIR /opt/test/workspace/communication
 COPY . /opt/test/workspace/communication
-RUN mkdir build && cd build && cmake .. && make && make install
+RUN mkdir build && cd build && cmake --build --install ..
 # RUN cd test && cmake . && make
