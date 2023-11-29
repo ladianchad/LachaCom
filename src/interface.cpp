@@ -76,7 +76,7 @@ Interface::~Interface()
   if(this->fd_){
     this->logger_->info("close file descriptor.");
     if(::close(this->fd_) < 0){
-      this->logger_->error("Close port {} failed with error : {}", getFDName(), strerror(errno));
+      this->logger_->error("Close port failed with error : {}", strerror(errno));
     }
   }
 }
