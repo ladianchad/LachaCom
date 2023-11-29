@@ -1,20 +1,24 @@
 ### Communication C++ Package
 
-Setting
+##Setting
 ```bash
 sudo usermod -aG dialout $USER
 ```
 
-Requirements
+##Requirements
+
+### requiered os
+`ubuntu 22.04` `ubuntu 21.04`
+
+### required packages
 `cmake` | `wget` | `nlohmann-json` | `libspdlog`
 
-install requirements 
+### install requirements 
 ```bash
   sudo apt install build-essential cmake wget nlohmann-json3-dev libspdlog-dev
 ```
 
-
-Install
+## Install
 ```bash
 git clone https://github.com/ladianchad/LachaCom.git
 cd LachaCom
