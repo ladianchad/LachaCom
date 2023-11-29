@@ -1,4 +1,4 @@
 build
 .vscode
-magic_enum-0.8.0
-spdlog-1.12.0
+magic_enum*
+spdlog*
